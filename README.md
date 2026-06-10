@@ -1,24 +1,32 @@
-# README
+# 脳トレアプリ（Brain Quest）
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+- 毎日やりたくなる脳トレ × RPG アプリ。ユーザーは冒険者としてデイリークエストをこなし、経験値とゴールドを稼いでレベルアップしていく。
+- 本番は1日1ジャンル固定だが、同じジャンルを何度でも練習可能。初回クリアボーナスあり。
 
-Things you may want to cover:
+## ドキュメント
 
-* Ruby version
+- 仕様書：[SPEC.md](./SPEC.md)
+- ロードマップ：[ROADMAP.md](./ROADMAP.md)
+- 仕様やロードマップに変更が生じた場合は、必ず対応するファイルを書き換えて最新の状態に保つこと
 
-* System dependencies
+## 技術スタック
 
-* Configuration
+- メイン：Ruby 3.4.3、Rails 8.1.3
+- CSS：Tailwind CSS（tailwindcss-rails / standalone）
+- DB：PostgreSQL
+- AI：Claude API（問題生成）
+- テスト：RSpec
+- 開発環境：ローカル
 
-* Database creation
+## 行動原則
 
-* Database initialization
+- コードを読まずに書かない。必ず既存コードを確認してから変更する
+- 実装内容が仕様書と予告する場合は、動作手順と期待する挙動を確認すること
+- ロードマップのフェーズ順を尊重し、先のフェーズの機能を前倒しで実装しない
 
-* How to run the test suite
+## 作業着手フロー
 
-* Services (job queues, cache servers, search engines, etc.)
+ロードマップのフェーズや独立したタスクに着手する前に、必ず以下を行うこと
 
-* Deployment instructions
-
-* ...
+- ブランチを切る：`main` 上で直接実装しない。命名は `feat/フェーズ名` または `fix/...` 、`chore/...` を用途別に使い分ける
+- コミット粒度を事前に決める：「各コミットの境界はどこか」を宣言し、ユーザーに確認してから実装に入る。原則として1コミット＝1論理的変更（モデル追加・機能追加・リファクタなど）。各コミットを単独でビルド・テストが通る状態に保つ
