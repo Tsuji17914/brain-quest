@@ -10,9 +10,41 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_12_000345) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_225855) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "attempts", force: :cascade do |t|
+    t.string "answer"
+    t.boolean "correct", default: false, null: false
+    t.datetime "created_at", null: false
+    t.integer "earned_exp", default: 0, null: false
+    t.integer "earned_gold", default: 0, null: false
+    t.boolean "first_attempt", default: false, null: false
+    t.bigint "quest_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["quest_id"], name: "index_attempts_on_quest_id"
+    t.index ["user_id"], name: "index_attempts_on_user_id"
+  end
+
+  create_table "daily_challenges", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.string "genre", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "quests", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "daily_challenge_id", null: false
+    t.integer "difficulty", null: false
+    t.integer "exp_reward", null: false
+    t.integer "gold_reward", null: false
+    t.jsonb "question_data", default: {}, null: false
+    t.datetime "updated_at", null: false
+    t.index ["daily_challenge_id"], name: "index_quests_on_daily_challenge_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -28,4 +60,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_000345) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
+
+  add_foreign_key "attempts", "quests"
+  add_foreign_key "attempts", "users"
+  add_foreign_key "quests", "daily_challenges"
 end
