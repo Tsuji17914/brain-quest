@@ -7,6 +7,6 @@ class QuestsController < ApplicationController
   end
 
   def show
-    @quest = Quest.find(params[:id])
+    @quest = Quest.includes(:daily_challenge).find(params[:id])
   end
 end

@@ -1,20 +1,56 @@
 <h1>クエスト挑戦中</h1>
 
-<p>難易度:
-  <% case @quest.difficulty
-     when "easy"   then %>★ 易しい
-  <% when "normal" then %>★★ 普通
-  <% when "hard"   then %>★★★ 難しい
-  <% end %>
+<p>ジャンル: <%= @quest.daily_challenge.genre %> |
+難易度:
+<% case @quest.difficulty
+   when "easy"   then %>★ 易しい
+<% when "normal" then %>★★ 普通
+<% when "hard"   then %>★★★ 難しい
+<% end %>
 </p>
 
 <p>報酬: EXP +<%= @quest.exp_reward %> / Gold +<%= @quest.gold_reward %>G</p>
 
-<h2><%= @quest.question_data["question"] %></h2>
-
 <%= form_with url: quest_attempts_path(@quest), method: :post do |f| %>
-  <%= f.text_field :answer, placeholder: "答えを入力" %>
-  <%= f.submit "回答する" %>
+  <% genre = @quest.daily_challenge.genre %>
+
+  <% if genre == "memory" %>
+    <%# 数列を表示してからJSで隠す %>
+    <p id="sequence-display"><%= @quest.question_data["sequence"].join("  ") %></p>
+    <p id="sequence-hidden" style="display:none;">数列を入力してください（スペース区切り）</p>
+    <%= f.text_field :answer, placeholder: "例: 3 1 4 1", id: "memory-answer", style: "display:none;" %>
+    <%= f.submit "回答する", id: "memory-submit", style: "display:none;" %>
+
+  <% elsif genre == "word_puzzle" %>
+    <h2><%= @quest.question_data["question"] %></h2>
+    <% @quest.question_data["choices"].each do |choice| %>
+      <div>
+        <%= f.radio_button :answer, choice %>
+        <%= f.label :answer, choice, value: choice %>
+      </div>
+    <% end %>
+    <%= f.submit "回答する" %>
+
+  <% else %>
+    <%# calculation %>
+    <h2><%= @quest.question_data["question"] %></h2>
+    <%= f.number_field :answer, placeholder: "数字を入力" %>
+    <%= f.submit "回答する" %>
+  <% end %>
 <% end %>
 
 <%= link_to "依頼板に戻る", root_path %>
+
+<script>
+  (function() {
+    var display = document.getElementById('sequence-display');
+    if (!display) return;
+
+    setTimeout(function() {
+      display.style.display = 'none';
+      document.getElementById('sequence-hidden').style.display = 'block';
+      document.getElementById('memory-answer').style.display = 'inline';
+      document.getElementById('memory-submit').style.display = 'inline';
+    }, 3000);
+  })();
+</script>
