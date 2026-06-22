@@ -15,7 +15,8 @@
   <% genre = @quest.daily_challenge.genre %>
 
   <% if genre == "memory" %>
-    <p id="countdown" style="font-size:2rem;"></p>
+    <button type="button" id="start-btn">準備できたら押してください</button>
+    <p id="countdown" style="font-size:2rem; display:none;"></p>
     <p id="sequence-display" style="display:none;"><%= @quest.question_data["sequence"].join("  ") %></p>
     <p id="sequence-hidden" style="display:none;">数列を入力してください（붙여서もOK）</p>
     <%= f.text_field :answer, placeholder: "例: 3141 または 3 1 4 1", id: "memory-answer", style: "display:none;" %>
@@ -43,29 +44,35 @@
 
 <script>
   (function() {
-    var countdown = document.getElementById('countdown');
-    if (!countdown) return;
+    var startBtn = document.getElementById('start-btn');
+    if (!startBtn) return;
 
-    var count = 3;
-    countdown.textContent = count;
+    startBtn.addEventListener('click', function() {
+      startBtn.style.display = 'none';
 
-    var timer = setInterval(function() {
-      count -= 1;
-      if (count > 0) {
-        countdown.textContent = count;
-      } else {
-        clearInterval(timer);
-        countdown.style.display = 'none';
-        var display = document.getElementById('sequence-display');
-        display.style.display = 'block';
+      var countdown = document.getElementById('countdown');
+      countdown.style.display = 'block';
+      var count = 3;
+      countdown.textContent = count;
 
-        setTimeout(function() {
-          display.style.display = 'none';
-          document.getElementById('sequence-hidden').style.display = 'block';
-          document.getElementById('memory-answer').style.display = 'inline';
-          document.getElementById('memory-submit').style.display = 'inline';
-        }, 1000);
-      }
-    }, 1000);
+      var timer = setInterval(function() {
+        count -= 1;
+        if (count > 0) {
+          countdown.textContent = count;
+        } else {
+          clearInterval(timer);
+          countdown.style.display = 'none';
+          var display = document.getElementById('sequence-display');
+          display.style.display = 'block';
+
+          setTimeout(function() {
+            display.style.display = 'none';
+            document.getElementById('sequence-hidden').style.display = 'block';
+            document.getElementById('memory-answer').style.display = 'inline';
+            document.getElementById('memory-submit').style.display = 'inline';
+          }, 1000);
+        }
+      }, 1000);
+    });
   })();
 </script>
