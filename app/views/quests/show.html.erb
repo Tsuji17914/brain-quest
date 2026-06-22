@@ -1,0 +1,20 @@
+<h1>クエスト挑戦中</h1>
+
+<p>難易度:
+  <% case @quest.difficulty
+     when "easy"   then %>★ 易しい
+  <% when "normal" then %>★★ 普通
+  <% when "hard"   then %>★★★ 難しい
+  <% end %>
+</p>
+
+<p>報酬: EXP +<%= @quest.exp_reward %> / Gold +<%= @quest.gold_reward %>G</p>
+
+<h2><%= @quest.question_data["question"] %></h2>
+
+<%= form_with url: quest_attempts_path(@quest), method: :post do |f| %>
+  <%= f.text_field :answer, placeholder: "答えを入力" %>
+  <%= f.submit "回答する" %>
+<% end %>
+
+<%= link_to "依頼板に戻る", root_path %>

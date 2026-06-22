@@ -1,0 +1,18 @@
+<h1>結果</h1>
+
+<% if @attempt.correct %>
+  <p>正解！</p>
+  <p>獲得 EXP: +<%= @attempt.earned_exp %></p>
+  <p>獲得 Gold: +<%= @attempt.earned_gold %>G</p>
+  <% if @attempt.first_attempt %>
+    <p>初回クリアボーナス適用！</p>
+  <% end %>
+<% else %>
+  <p>不正解...</p>
+  <p>もう一度挑戦しますか？</p>
+<% end %>
+
+<p>現在のステータス: Lv.<%= current_user.level %> | EXP: <%= current_user.exp %> | Gold: <%= current_user.gold %>G</p>
+
+<%= link_to "もう一度挑戦", quest_path(@attempt.quest) %>
+<%= link_to "依頼板に戻る", root_path %>
