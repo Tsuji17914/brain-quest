@@ -17,8 +17,8 @@
   <% if genre == "memory" %>
     <%# 数列を表示してからJSで隠す %>
     <p id="sequence-display"><%= @quest.question_data["sequence"].join("  ") %></p>
-    <p id="sequence-hidden" style="display:none;">数列を入力してください（スペース区切り）</p>
-    <%= f.text_field :answer, placeholder: "例: 3 1 4 1", id: "memory-answer", style: "display:none;" %>
+    <p id="sequence-hidden" style="display:none;">数列を入力してください（붙여서もOK）</p>
+    <%= f.text_field :answer, placeholder: "例: 3141 または 3 1 4 1", id: "memory-answer", style: "display:none;" %>
     <%= f.submit "回答する", id: "memory-submit", style: "display:none;" %>
 
   <% elsif genre == "word_puzzle" %>
@@ -51,6 +51,6 @@
       document.getElementById('sequence-hidden').style.display = 'block';
       document.getElementById('memory-answer').style.display = 'inline';
       document.getElementById('memory-submit').style.display = 'inline';
-    }, 3000);
+    }, 1500);
   })();
 </script>
