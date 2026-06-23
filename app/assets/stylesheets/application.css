@@ -374,6 +374,27 @@ input[type="radio"] { width: auto; margin-right: 0.4rem; }
   font-size: 0.95rem;
 }
 
+.board-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #f0d878;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+.paper-cleared {
+  opacity: 0.72;
+  filter: sepia(40%);
+}
+.paper-cleared-stamp {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1a6e2e;
+  margin-left: 0.3rem;
+}
+
 /* ── Quest show ── */
 .question-box {
   background: #110f22;
