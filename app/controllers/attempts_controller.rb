@@ -4,7 +4,7 @@ class AttemptsController < ApplicationController
 
   def create
     first = current_user.attempts.where(quest: @quest, correct: true).none?
-    correct = params[:answer].to_s.strip == @quest.question_data["answer"].to_s
+    correct = normalize_answer(params[:answer]) == normalize_answer(@quest.question_data["answer"])
 
     earned_exp  = correct ? (first ? Quest::EXP_REWARDS[@quest.difficulty.to_sym][:first] : Quest::EXP_REWARDS[@quest.difficulty.to_sym][:repeat]) : 0
     earned_gold = correct ? Quest::GOLD_REWARDS[@quest.difficulty.to_sym] : 0
@@ -34,5 +34,12 @@ class AttemptsController < ApplicationController
 
   def set_quest
     @quest = Quest.find(params[:quest_id])
+  end
+
+  def normalize_answer(value)
+    value.to_s
+         .unicode_normalize(:nfkc)  # 全角→半角
+         .gsub(/[[:space:]]/, "")   # スペース除去
+         .strip
   end
 end
