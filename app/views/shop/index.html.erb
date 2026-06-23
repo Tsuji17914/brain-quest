@@ -1,0 +1,23 @@
+<h1>アイテムショップ</h1>
+
+<p>所持 Gold: <%= current_user.gold %>G</p>
+
+<% if notice %>
+  <p style="color:green;"><%= notice %></p>
+<% end %>
+<% if alert %>
+  <p style="color:red;"><%= alert %></p>
+<% end %>
+
+<% @items.each do |item| %>
+  <div>
+    <h2><%= item.name %> — <%= item.price %>G</h2>
+    <p><%= item.description %></p>
+    <p>所持数: <%= (@user_items[item.effect] || []).count %>個</p>
+    <%= form_with url: shop_purchases_path(item), method: :post do |f| %>
+      <%= f.submit "購入する", disabled: current_user.gold < item.price %>
+    <% end %>
+  </div>
+<% end %>
+
+<%= link_to "依頼板に戻る", root_path %>
