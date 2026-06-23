@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_225710) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_23_230354) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -35,6 +35,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_225710) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", null: false
+    t.string "effect", null: false
+    t.string "name", null: false
+    t.integer "price", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "questions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "difficulty", null: false
@@ -52,6 +61,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_225710) do
     t.jsonb "question_data", default: {}, null: false
     t.datetime "updated_at", null: false
     t.index ["daily_challenge_id"], name: "index_quests_on_daily_challenge_id"
+  end
+
+  create_table "user_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "item_id", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "used", default: false, null: false
+    t.datetime "used_at"
+    t.bigint "user_id", null: false
+    t.index ["item_id"], name: "index_user_items_on_item_id"
+    t.index ["user_id"], name: "index_user_items_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -74,4 +94,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_225710) do
   add_foreign_key "attempts", "quests"
   add_foreign_key "attempts", "users"
   add_foreign_key "quests", "daily_challenges"
+  add_foreign_key "user_items", "items"
+  add_foreign_key "user_items", "users"
 end

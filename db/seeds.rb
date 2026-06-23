@@ -114,3 +114,19 @@ questions.each do |attrs|
 end
 
 puts "Question pool: #{Question.count} questions"
+
+items = [
+  { name: "聖水",    description: "ストリークが途切れそうなとき、1回だけ守ってくれる",    price: 50,  effect: "holy_water" },
+  { name: "賢者の石", description: "次のクエストで獲得できる EXP が2倍になる",             price: 80,  effect: "sage_stone" },
+  { name: "ヒント書", description: "問題のヒントを見ることができる（1回限り）",             price: 15,  effect: "hint_book" }
+]
+
+items.each do |attrs|
+  Item.find_or_create_by!(effect: attrs[:effect]) do |item|
+    item.name        = attrs[:name]
+    item.description = attrs[:description]
+    item.price       = attrs[:price]
+  end
+end
+
+puts "Items: #{Item.count} items"

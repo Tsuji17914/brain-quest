@@ -3,6 +3,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :attempts, dependent: :destroy
+  has_many :user_items, dependent: :destroy
+  has_many :items, through: :user_items
 
   MAX_LEVEL = 99
 
@@ -43,8 +45,38 @@ class User < ApplicationRecord
     if last_played_date == date - 1
       increment!(:streak)
     elsif last_played_date != date
-      update!(streak: 1)
+      if use_item!("holy_water")
+        # 聖水でストリーク保護：リセットせず継続
+      else
+        update!(streak: 1)
+      end
     end
     update!(last_played_date: date)
+  end
+
+  def active_item?(effect)
+    user_items.unused.joins(:item).exists?(items: { effect: effect })
+  end
+
+  def use_item!(effect)
+    user_item = user_items.unused.joins(:item).find_by(items: { effect: effect })
+    return false unless user_item
+
+    user_item.use!
+    true
+  end
+
+  def can_afford?(item)
+    gold >= item.price
+  end
+
+  def purchase!(item)
+    return false unless can_afford?(item)
+
+    transaction do
+      decrement!(:gold, item.price)
+      user_items.create!(item: item)
+    end
+    true
   end
 end

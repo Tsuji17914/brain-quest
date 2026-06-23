@@ -9,4 +9,12 @@ class QuestsController < ApplicationController
   def show
     @quest = Quest.includes(:daily_challenge).find(params[:id])
   end
+
+  def reveal_hint
+    @quest = Quest.find(params[:quest_id])
+    if current_user.use_item!("hint_book")
+      flash[:hint] = @quest.question_data["hint"]
+    end
+    redirect_to quest_path(@quest)
+  end
 end

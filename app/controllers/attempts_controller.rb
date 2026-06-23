@@ -6,7 +6,9 @@ class AttemptsController < ApplicationController
     first = current_user.attempts.where(quest: @quest, correct: true).none?
     correct = normalize_answer(params[:answer]) == normalize_answer(@quest.question_data["answer"])
 
-    earned_exp  = correct ? (first ? Quest::EXP_REWARDS[@quest.difficulty.to_sym][:first] : Quest::EXP_REWARDS[@quest.difficulty.to_sym][:repeat]) : 0
+    base_exp    = correct ? (first ? Quest::EXP_REWARDS[@quest.difficulty.to_sym][:first] : Quest::EXP_REWARDS[@quest.difficulty.to_sym][:repeat]) : 0
+    sage_active = correct && current_user.active_item?("sage_stone")
+    earned_exp  = sage_active ? base_exp * 2 : base_exp
     earned_gold = correct ? Quest::GOLD_REWARDS[@quest.difficulty.to_sym] : 0
 
     @attempt = current_user.attempts.create!(
@@ -19,6 +21,7 @@ class AttemptsController < ApplicationController
     )
 
     if correct
+      current_user.use_item!("sage_stone") if sage_active
       current_user.increment!(:exp, earned_exp)
       current_user.increment!(:gold, earned_gold)
       current_user.level_up_if_needed!

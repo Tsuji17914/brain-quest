@@ -11,6 +11,14 @@
 
 <p>報酬: EXP +<%= @quest.exp_reward %> / Gold +<%= @quest.gold_reward %>G</p>
 
+<% if flash[:hint].present? %>
+  <p><strong>ヒント:</strong> <%= flash[:hint] %></p>
+<% elsif current_user.active_item?("hint_book") && @quest.question_data["hint"].present? %>
+  <%= form_with url: reveal_hint_quest_path(@quest), method: :post do |f| %>
+    <%= f.submit "ヒントを見る（ヒント本を1つ消費）" %>
+  <% end %>
+<% end %>
+
 <%= form_with url: quest_attempts_path(@quest), method: :post do |f| %>
   <% genre = @quest.daily_challenge.genre %>
 
