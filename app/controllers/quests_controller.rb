@@ -8,6 +8,7 @@ class QuestsController < ApplicationController
 
   def show
     @quest = Quest.includes(:daily_challenge).find(params[:id])
+    @already_cleared = current_user.attempts.exists?(quest: @quest, correct: true)
   end
 
   def reveal_hint
