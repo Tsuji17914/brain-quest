@@ -1,0 +1,54 @@
+<h1>冒険者プロフィール</h1>
+
+<section>
+  <h2><%= @user.current_title %></h2>
+  <p>Lv.<%= @user.level %></p>
+  <p>累計 EXP: <%= @user.exp %>
+    <% unless @user.level >= User::MAX_LEVEL %>
+      （次のレベルまで あと <%= @user.exp_to_next_level %> EXP）
+    <% end %>
+  </p>
+  <p>Gold: <%= @user.gold %>G</p>
+  <p>ストリーク: <%= @user.streak %>日連続</p>
+  <p>最終プレイ日: <%= @user.last_played_date&.strftime("%Y/%m/%d") || "まだプレイしていません" %></p>
+</section>
+
+<section>
+  <h2>最近の記録</h2>
+  <% if @recent_attempts.empty? %>
+    <p>まだクエストをクリアしていません。</p>
+  <% else %>
+    <table>
+      <thead>
+        <tr>
+          <th>日付</th>
+          <th>ジャンル</th>
+          <th>難易度</th>
+          <th>結果</th>
+          <th>獲得EXP</th>
+          <th>獲得Gold</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @recent_attempts.each do |attempt| %>
+          <tr>
+            <td><%= attempt.created_at.strftime("%m/%d") %></td>
+            <td><%= attempt.quest.daily_challenge.genre %></td>
+            <td>
+              <% case attempt.quest.difficulty
+                 when "easy"   then %>★
+              <% when "normal" then %>★★
+              <% when "hard"   then %>★★★
+              <% end %>
+            </td>
+            <td><%= attempt.correct ? "正解" : "不正解" %></td>
+            <td>+<%= attempt.earned_exp %></td>
+            <td>+<%= attempt.earned_gold %>G</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>
+
+<%= link_to "依頼板に戻る", root_path %>

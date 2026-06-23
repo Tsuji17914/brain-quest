@@ -21,6 +21,8 @@ class AttemptsController < ApplicationController
     if correct
       current_user.increment!(:exp, earned_exp)
       current_user.increment!(:gold, earned_gold)
+      current_user.level_up_if_needed!
+      current_user.update_streak!
     end
 
     redirect_to quest_attempt_path(@quest, @attempt)
