@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_224647) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_23_225710) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -60,10 +60,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_224647) do
     t.string "encrypted_password", default: "", null: false
     t.integer "exp", default: 0, null: false
     t.integer "gold", default: 0, null: false
+    t.date "last_played_date"
     t.integer "level", default: 1, null: false
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.integer "streak", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
