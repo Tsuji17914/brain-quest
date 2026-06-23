@@ -18,44 +18,46 @@
     </div>
 
     <% cleared_ids = current_user.attempts.where(correct: true).pluck(:quest_id).to_set %>
+    <% groups = @quests.group_by(&:difficulty) %>
+    <% interleaved = (0...2).flat_map { |i| %w[easy normal hard].map { |d| groups[d]&.[](i) }.compact } %>
 
-    <% [["easy", "易しい依頼", "easy-h"], ["normal", "普通の依頼", "normal-h"], ["hard", "難しい依頼", "hard-h"]].each do |diff, label, css| %>
-      <% group = @quests.select { |q| q.difficulty == diff } %>
-      <% next if group.empty? %>
-
-      <p class="board-section-label"><%= label %></p>
-      <div class="quest-papers" style="margin-bottom:1.5rem;">
-        <% group.each_with_index do |quest, i| %>
-          <% cleared = cleared_ids.include?(quest.id) %>
-          <div class="quest-paper <%= 'paper-cleared' if cleared %>">
-            <p class="paper-heading <%= css %>">— <%= label %> —</p>
-            <p class="paper-swords">
-              <% case diff
-                 when "easy"   then %>⚔
-              <% when "normal" then %>⚔⚔
-              <% when "hard"   then %>⚔⚔⚔
-              <% end %>
-              <% if cleared %><span class="paper-cleared-stamp">✓ 完了</span><% end %>
-            </p>
-            <p class="paper-genre">
-              <% case @daily_challenge.genre
-                 when "calculation" then %>計算問題
-              <% when "memory"      then %>記憶問題
-              <% when "word_puzzle" then %>言葉パズル
-              <% end %>
-            </p>
-            <div class="paper-rewards">
-              <% if cleared %>
-                <span style="color:#888; font-size:0.78rem;">報酬受取済み</span>
-              <% else %>
-                <span class="p-exp">EXP +<%= quest.exp_reward %></span>
-                <span class="p-gold">💰 +<%= quest.gold_reward %>G</span>
-              <% end %>
-            </div>
-            <%= link_to cleared ? "もう一度挑戦" : "受注する", quest_path(quest), class: "paper-btn" %>
+    <div class="quest-papers">
+      <% interleaved.each do |quest| %>
+        <% cleared = cleared_ids.include?(quest.id) %>
+        <div class="quest-paper <%= 'paper-cleared' if cleared %>">
+          <p class="paper-heading <%= quest.difficulty %>-h">
+            <% case quest.difficulty
+               when "easy"   then %>— 易しい依頼 —
+            <% when "normal" then %>— 普通の依頼 —
+            <% when "hard"   then %>— 難しい依頼 —
+            <% end %>
+          </p>
+          <p class="paper-swords">
+            <% case quest.difficulty
+               when "easy"   then %>⚔
+            <% when "normal" then %>⚔⚔
+            <% when "hard"   then %>⚔⚔⚔
+            <% end %>
+            <% if cleared %><span class="paper-cleared-stamp">✓ 完了</span><% end %>
+          </p>
+          <p class="paper-genre">
+            <% case @daily_challenge.genre
+               when "calculation" then %>計算問題
+            <% when "memory"      then %>記憶問題
+            <% when "word_puzzle" then %>言葉パズル
+            <% end %>
+          </p>
+          <div class="paper-rewards">
+            <% if cleared %>
+              <span style="color:#888; font-size:0.78rem;">報酬受取済み</span>
+            <% else %>
+              <span class="p-exp">EXP +<%= quest.exp_reward %></span>
+              <span class="p-gold">💰 +<%= quest.gold_reward %>G</span>
+            <% end %>
           </div>
-        <% end %>
-      </div>
-    <% end %>
+          <%= link_to cleared ? "もう一度挑戦" : "受注する", quest_path(quest), class: "paper-btn" %>
+        </div>
+      <% end %>
+    </div>
   <% end %>
 </div>

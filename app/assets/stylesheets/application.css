@@ -272,7 +272,7 @@ input[type="radio"] { width: auto; margin-right: 0.4rem; }
 
 .quest-papers {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.75rem;
   padding: 0.5rem 0.25rem;
 }
@@ -284,14 +284,17 @@ input[type="radio"] { width: auto; margin-right: 0.4rem; }
   padding: 1.5rem 1.25rem 1.25rem;
   position: relative;
   box-shadow: 3px 4px 12px rgba(0,0,0,0.55), inset 0 0 20px rgba(139,90,20,0.08);
-  transform: rotate(-2deg);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: default;
 }
-.quest-paper:nth-child(2) { transform: rotate(1.5deg); }
-.quest-paper:nth-child(3) { transform: rotate(-0.8deg); }
+.quest-paper:nth-child(1) { transform: rotate(-2deg); }
+.quest-paper:nth-child(2) { transform: rotate(0.8deg); }
+.quest-paper:nth-child(3) { transform: rotate(-1.5deg); }
+.quest-paper:nth-child(4) { transform: rotate(1.8deg); }
+.quest-paper:nth-child(5) { transform: rotate(-0.6deg); }
+.quest-paper:nth-child(6) { transform: rotate(1.2deg); }
 .quest-paper:hover {
-  transform: rotate(0deg) translateY(-6px) scale(1.02);
+  transform: rotate(0deg) translateY(-6px) scale(1.02) !important;
   box-shadow: 6px 10px 20px rgba(0,0,0,0.65);
   z-index: 2;
 }
