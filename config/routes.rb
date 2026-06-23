@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   resources :quests, only: [ :index, :show ] do
     resources :attempts, only: [ :create, :show ]
+    post :reveal_hint, on: :member
   end
 
   root "quests#index"
