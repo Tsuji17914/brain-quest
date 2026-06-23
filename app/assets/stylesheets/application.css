@@ -381,7 +381,7 @@ input[type="radio"] { width: auto; margin-right: 0.4rem; }
   color: #f0d878;
   text-shadow: 0 1px 3px rgba(0,0,0,0.7);
   margin-bottom: 0.5rem;
-  padding-left: 0.25rem;
+  text-align: center;
 }
 
 .paper-cleared {
