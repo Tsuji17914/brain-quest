@@ -14,8 +14,13 @@
     </span>
   </div>
   <div class="quest-rewards mt-1" style="font-size:0.9rem;">
-    <span class="exp-val">EXP +<%= @quest.exp_reward %></span>
-    <span class="gold-val">💰 +<%= @quest.gold_reward %>G</span>
+    <% if @already_cleared %>
+      <span class="text-muted">✓ クリア済み（報酬受取済み）</span>
+    <% else %>
+      <span class="exp-val">EXP +<%= @quest.exp_reward %></span>
+      <span class="gold-val">💰 +<%= @quest.gold_reward %>G</span>
+      <span class="text-muted" style="font-size:0.78rem;">初回クリア報酬</span>
+    <% end %>
   </div>
 </div>
 

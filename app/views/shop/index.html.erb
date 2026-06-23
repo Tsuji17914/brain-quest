@@ -1,29 +1,32 @@
-<div class="page-header">
-  <h1>🏪 アイテムショップ</h1>
-  <p class="page-subtitle">所持 Gold: <span class="text-gold"><%= current_user.gold %>G</span></p>
+<div class="shop-header">
+  <span class="shop-header-title">🏺 道具屋</span>
+  <span class="shop-header-gold">💰 所持 Gold: <%= current_user.gold %>G</span>
 </div>
 
-<div class="shop-grid">
-  <% @items.each do |item| %>
-    <div class="shop-card">
-      <div class="item-name">
-        <% case item.effect
-           when "holy_water"  then %>🌊 <%= item.name %>
-        <% when "sage_stone"  then %>💎 <%= item.name %>
-        <% when "hint_book"   then %>📖 <%= item.name %>
-        <% end %>
+<div class="shop-shelf">
+  <div class="shop-grid">
+    <% @items.each do |item| %>
+      <div class="shop-card">
+        <div class="item-name">
+          <% case item.effect
+             when "holy_water" then %>🌊 <%= item.name %>
+          <% when "sage_stone" then %>💎 <%= item.name %>
+          <% when "hint_book"  then %>📖 <%= item.name %>
+          <% end %>
+        </div>
+        <p class="item-desc"><%= item.description %></p>
+        <p class="item-owned">所持: <%= (@user_items[item.effect] || []).count %>個</p>
+        <div class="item-footer">
+          <span class="item-price">💰 <%= item.price %>G</span>
+          <%= form_with url: shop_purchases_path(item), method: :post do |f| %>
+            <%= f.submit "購入する", class: "paper-btn",
+                  style: "padding:0.3rem 0.8rem; font-size:0.8rem; cursor:#{current_user.gold < item.price ? 'not-allowed' : 'pointer'}; opacity:#{current_user.gold < item.price ? '0.45' : '1'};",
+                  disabled: current_user.gold < item.price %>
+          <% end %>
+        </div>
       </div>
-      <p class="item-desc"><%= item.description %></p>
-      <p class="item-owned">所持: <%= (@user_items[item.effect] || []).count %>個</p>
-      <div class="item-footer">
-        <span class="item-price">💰 <%= item.price %>G</span>
-        <%= form_with url: shop_purchases_path(item), method: :post do |f| %>
-          <%= f.submit "購入する", class: "btn btn-gold btn-sm",
-                disabled: current_user.gold < item.price %>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
 </div>
 
 <div class="mt-3">

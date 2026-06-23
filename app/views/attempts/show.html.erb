@@ -3,12 +3,14 @@
     <div class="result-icon">✨</div>
     <div class="result-title">正解！</div>
     <% if @attempt.first_attempt %>
-      <div class="result-bonus">🎉 初回クリアボーナス！</div>
+      <div class="result-bonus">🎉 初回クリア！</div>
+      <div class="reward-row">
+        <span class="reward-exp">EXP +<%= @attempt.earned_exp %></span>
+        <span class="reward-gold">💰 +<%= @attempt.earned_gold %>G</span>
+      </div>
+    <% else %>
+      <p class="text-muted mt-1" style="font-size:0.88rem;">すでにクリア済みのため報酬はありません</p>
     <% end %>
-    <div class="reward-row">
-      <span class="reward-exp">EXP +<%= @attempt.earned_exp %></span>
-      <span class="reward-gold">💰 +<%= @attempt.earned_gold %>G</span>
-    </div>
   </div>
 <% else %>
   <div class="result-banner wrong">

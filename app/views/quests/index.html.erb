@@ -1,48 +1,63 @@
-<div class="page-header">
-  <h1>冒険者ギルド 依頼板</h1>
-  <p class="page-subtitle"><%= current_user.current_title %> — <%= current_user.email %></p>
-</div>
+<div class="guild-sign">冒険者ギルド 依頼板</div>
 
-<% if @daily_challenge.nil? %>
-  <div class="card card-gold" style="text-align:center; padding:2.5rem;">
-    <p style="font-size:1.5rem; margin-bottom:0.5rem;">📜</p>
-    <p>本日の依頼はまだ届いていません。</p>
-    <p class="text-muted mt-1" style="font-size:0.85rem;">管理者がデイリーチャレンジを生成するまでお待ちください。</p>
-  </div>
-<% else %>
-  <div class="flex items-center gap-2 flex-wrap" style="margin-bottom:1rem;">
-    <span class="genre-badge">
-      <% case @daily_challenge.genre
-         when "calculation" then %>🧮 計算
-      <% when "memory"      then %>🧠 記憶
-      <% when "word_puzzle" then %>📝 言葉パズル
+<div class="guild-board">
+  <% if @daily_challenge.nil? %>
+    <div class="board-empty">
+      <p style="font-size:2rem; margin-bottom:0.5rem;">📜</p>
+      <p>本日の依頼はまだ届いておりません</p>
+    </div>
+  <% else %>
+    <div style="text-align:center; margin-bottom:1.5rem;">
+      <span class="genre-seal">
+        <% case @daily_challenge.genre
+           when "calculation" then %>🧮 本日のジャンル：計算
+        <% when "memory"      then %>🧠 本日のジャンル：記憶
+        <% when "word_puzzle" then %>📝 本日のジャンル：言葉パズル
+        <% end %>
+      </span>
+    </div>
+
+    <% cleared_ids = current_user.attempts.where(correct: true).pluck(:quest_id).to_set %>
+    <% groups = @quests.group_by(&:difficulty) %>
+    <% interleaved = (0...2).flat_map { |i| %w[easy normal hard].map { |d| groups[d]&.[](i) }.compact } %>
+
+    <div class="quest-papers">
+      <% interleaved.each do |quest| %>
+        <% cleared = cleared_ids.include?(quest.id) %>
+        <div class="quest-paper <%= 'paper-cleared' if cleared %>">
+          <p class="paper-heading <%= quest.difficulty %>-h">
+            <% case quest.difficulty
+               when "easy"   then %>— 易しい依頼 —
+            <% when "normal" then %>— 普通の依頼 —
+            <% when "hard"   then %>— 難しい依頼 —
+            <% end %>
+          </p>
+          <p class="paper-swords">
+            <% case quest.difficulty
+               when "easy"   then %>⚔
+            <% when "normal" then %>⚔⚔
+            <% when "hard"   then %>⚔⚔⚔
+            <% end %>
+            <% if cleared %><span class="paper-cleared-stamp">✓ 完了</span><% end %>
+          </p>
+          <p class="paper-genre">
+            <% case @daily_challenge.genre
+               when "calculation" then %>計算問題
+            <% when "memory"      then %>記憶問題
+            <% when "word_puzzle" then %>言葉パズル
+            <% end %>
+          </p>
+          <div class="paper-rewards">
+            <% if cleared %>
+              <span style="color:#888; font-size:0.78rem;">報酬受取済み</span>
+            <% else %>
+              <span class="p-exp">EXP +<%= quest.exp_reward %></span>
+              <span class="p-gold">💰 +<%= quest.gold_reward %>G</span>
+            <% end %>
+          </div>
+          <%= link_to cleared ? "もう一度挑戦" : "受注する", quest_path(quest), class: "paper-btn" %>
+        </div>
       <% end %>
-    </span>
-    <span class="text-muted" style="font-size:0.85rem;">本日のジャンル</span>
-  </div>
-
-  <div class="quest-grid">
-    <% @quests.each do |quest| %>
-      <div class="quest-card <%= quest.difficulty %>">
-        <div class="flex items-center justify-between">
-          <% case quest.difficulty
-             when "easy"   then %>
-            <span class="badge badge-easy">易しい</span>
-            <span class="stars">★</span>
-          <% when "normal" then %>
-            <span class="badge badge-normal">普通</span>
-            <span class="stars">★★</span>
-          <% when "hard"   then %>
-            <span class="badge badge-hard">難しい</span>
-            <span class="stars">★★★</span>
-          <% end %>
-        </div>
-        <div class="quest-rewards">
-          <span class="exp-val">EXP +<%= quest.exp_reward %></span>
-          <span class="gold-val">💰 +<%= quest.gold_reward %>G</span>
-        </div>
-        <%= link_to "受注する →", quest_path(quest), class: "btn btn-primary" %>
-      </div>
-    <% end %>
-  </div>
-<% end %>
+    </div>
+  <% end %>
+</div>
