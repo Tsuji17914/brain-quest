@@ -1,24 +1,47 @@
-<h1>冒険者ギルド - 本日の依頼板</h1>
-
-<p>冒険者: <%= current_user.email %> | Lv.<%= current_user.level %> | EXP: <%= current_user.exp %> | Gold: <%= current_user.gold %>G</p>
+<div class="page-header">
+  <h1>冒険者ギルド 依頼板</h1>
+  <p class="page-subtitle"><%= current_user.current_title %> — <%= current_user.email %></p>
+</div>
 
 <% if @daily_challenge.nil? %>
-  <p>本日の依頼はまだ届いていません。</p>
+  <div class="card card-gold" style="text-align:center; padding:2.5rem;">
+    <p style="font-size:1.5rem; margin-bottom:0.5rem;">📜</p>
+    <p>本日の依頼はまだ届いていません。</p>
+    <p class="text-muted mt-1" style="font-size:0.85rem;">管理者がデイリーチャレンジを生成するまでお待ちください。</p>
+  </div>
 <% else %>
-  <p>本日のジャンル: <%= @daily_challenge.genre %></p>
+  <div class="flex items-center gap-2 flex-wrap" style="margin-bottom:1rem;">
+    <span class="genre-badge">
+      <% case @daily_challenge.genre
+         when "calculation" then %>🧮 計算
+      <% when "memory"      then %>🧠 記憶
+      <% when "word_puzzle" then %>📝 言葉パズル
+      <% end %>
+    </span>
+    <span class="text-muted" style="font-size:0.85rem;">本日のジャンル</span>
+  </div>
 
-  <div>
+  <div class="quest-grid">
     <% @quests.each do |quest| %>
-      <div>
-        <h2>
+      <div class="quest-card <%= quest.difficulty %>">
+        <div class="flex items-center justify-between">
           <% case quest.difficulty
-             when "easy"   then %>★ 易しい
-          <% when "normal" then %>★★ 普通
-          <% when "hard"   then %>★★★ 難しい
+             when "easy"   then %>
+            <span class="badge badge-easy">易しい</span>
+            <span class="stars">★</span>
+          <% when "normal" then %>
+            <span class="badge badge-normal">普通</span>
+            <span class="stars">★★</span>
+          <% when "hard"   then %>
+            <span class="badge badge-hard">難しい</span>
+            <span class="stars">★★★</span>
           <% end %>
-        </h2>
-        <p>EXP: +<%= quest.exp_reward %> | Gold: +<%= quest.gold_reward %>G</p>
-        <%= link_to "受注する", quest_path(quest), class: "btn" %>
+        </div>
+        <div class="quest-rewards">
+          <span class="exp-val">EXP +<%= quest.exp_reward %></span>
+          <span class="gold-val">💰 +<%= quest.gold_reward %>G</span>
+        </div>
+        <%= link_to "受注する →", quest_path(quest), class: "btn btn-primary" %>
       </div>
     <% end %>
   </div>

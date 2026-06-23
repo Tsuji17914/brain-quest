@@ -1,18 +1,42 @@
-<h1>結果</h1>
-
 <% if @attempt.correct %>
-  <p>正解！</p>
-  <p>獲得 EXP: +<%= @attempt.earned_exp %></p>
-  <p>獲得 Gold: +<%= @attempt.earned_gold %>G</p>
-  <% if @attempt.first_attempt %>
-    <p>初回クリアボーナス適用！</p>
-  <% end %>
+  <div class="result-banner correct">
+    <div class="result-icon">✨</div>
+    <div class="result-title">正解！</div>
+    <% if @attempt.first_attempt %>
+      <div class="result-bonus">🎉 初回クリアボーナス！</div>
+    <% end %>
+    <div class="reward-row">
+      <span class="reward-exp">EXP +<%= @attempt.earned_exp %></span>
+      <span class="reward-gold">💰 +<%= @attempt.earned_gold %>G</span>
+    </div>
+  </div>
 <% else %>
-  <p>不正解...</p>
-  <p>もう一度挑戦しますか？</p>
+  <div class="result-banner wrong">
+    <div class="result-icon">💔</div>
+    <div class="result-title">不正解...</div>
+    <p class="text-muted mt-1" style="font-size:0.9rem;">再挑戦してみましょう！</p>
+  </div>
 <% end %>
 
-<p>現在のステータス: Lv.<%= current_user.level %> | EXP: <%= current_user.exp %> | Gold: <%= current_user.gold %>G</p>
+<div class="card">
+  <p class="card-title">現在のステータス</p>
+  <div class="stats-grid" style="margin-bottom:0;">
+    <div class="stat-box">
+      <div class="stat-val">Lv.<%= current_user.level %></div>
+      <div class="stat-label">レベル</div>
+    </div>
+    <div class="stat-box exp-box">
+      <div class="stat-val"><%= current_user.exp %></div>
+      <div class="stat-label">累計 EXP</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val"><%= current_user.gold %>G</div>
+      <div class="stat-label">所持 Gold</div>
+    </div>
+  </div>
+</div>
 
-<%= link_to "もう一度挑戦", quest_path(@attempt.quest) %>
-<%= link_to "依頼板に戻る", root_path %>
+<div class="flex gap-2 flex-wrap mt-2">
+  <%= link_to "もう一度挑戦", quest_path(@attempt.quest), class: "btn btn-outline" %>
+  <%= link_to "依頼板に戻る", root_path, class: "btn btn-primary" %>
+</div>

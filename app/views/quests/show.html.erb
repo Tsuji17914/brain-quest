@@ -1,54 +1,76 @@
-<h1>クエスト挑戦中</h1>
-
-<p>ジャンル: <%= @quest.daily_challenge.genre %> |
-難易度:
-<% case @quest.difficulty
-   when "easy"   then %>★ 易しい
-<% when "normal" then %>★★ 普通
-<% when "hard"   then %>★★★ 難しい
-<% end %>
-</p>
-
-<p>報酬: EXP +<%= @quest.exp_reward %> / Gold +<%= @quest.gold_reward %>G</p>
+<div class="page-header">
+  <div class="flex items-center gap-2 flex-wrap">
+    <% case @quest.difficulty
+       when "easy"   then %><span class="badge badge-easy">易しい</span>
+    <% when "normal" then %><span class="badge badge-normal">普通</span>
+    <% when "hard"   then %><span class="badge badge-hard">難しい</span>
+    <% end %>
+    <span class="genre-badge">
+      <% case @quest.daily_challenge.genre
+         when "calculation" then %>🧮 計算
+      <% when "memory"      then %>🧠 記憶
+      <% when "word_puzzle" then %>📝 言葉パズル
+      <% end %>
+    </span>
+  </div>
+  <div class="quest-rewards mt-1" style="font-size:0.9rem;">
+    <span class="exp-val">EXP +<%= @quest.exp_reward %></span>
+    <span class="gold-val">💰 +<%= @quest.gold_reward %>G</span>
+  </div>
+</div>
 
 <% if flash[:hint].present? %>
-  <p><strong>ヒント:</strong> <%= flash[:hint] %></p>
+  <div class="hint-box">💡 ヒント: <%= flash[:hint] %></div>
 <% elsif current_user.active_item?("hint_book") && @quest.question_data["hint"].present? %>
   <%= form_with url: reveal_hint_quest_path(@quest), method: :post do |f| %>
-    <%= f.submit "ヒントを見る（ヒント本を1つ消費）" %>
+    <%= f.submit "💡 ヒントを見る（ヒント本を1つ消費）", class: "btn btn-outline btn-sm" %>
   <% end %>
 <% end %>
 
-<%= form_with url: quest_attempts_path(@quest), method: :post do |f| %>
-  <% genre = @quest.daily_challenge.genre %>
+<div class="card" style="margin-top:0.75rem;">
+  <%= form_with url: quest_attempts_path(@quest), method: :post do |f| %>
+    <% genre = @quest.daily_challenge.genre %>
 
-  <% if genre == "memory" %>
-    <button type="button" id="start-btn">準備できたら押してください</button>
-    <p id="countdown" style="font-size:2rem; display:none;"></p>
-    <p id="sequence-display" style="display:none;"><%= @quest.question_data["sequence"].join("  ") %></p>
-    <p id="sequence-hidden" style="display:none;">数列を入力してください（붙여서もOK）</p>
-    <%= f.text_field :answer, placeholder: "例: 3141 または 3 1 4 1", id: "memory-answer", style: "display:none;" %>
-    <%= f.submit "回答する", id: "memory-submit", style: "display:none;" %>
-
-  <% elsif genre == "word_puzzle" %>
-    <h2><%= @quest.question_data["question"] %></h2>
-    <% @quest.question_data["choices"].each do |choice| %>
-      <div>
-        <%= f.radio_button :answer, choice %>
-        <%= f.label :answer, choice, value: choice %>
+    <% if genre == "memory" %>
+      <p class="text-muted" style="font-size:0.88rem; margin-bottom:1rem;">数列を記憶してください</p>
+      <div style="text-align:center; padding:1rem 0;">
+        <button type="button" id="start-btn" class="btn btn-gold">準備できたら押してください</button>
+        <p id="countdown" class="countdown-display" style="display:none;"></p>
+        <p id="sequence-display" class="memory-display" style="display:none;"><%= @quest.question_data["sequence"].join("  ") %></p>
       </div>
+      <div id="sequence-hidden" style="display:none;">
+        <p class="text-muted" style="margin-bottom:0.5rem; font-size:0.9rem;">数列を入力してください（붙여서もOK）</p>
+        <div class="form-group">
+          <%= f.text_field :answer, placeholder: "例: 3141 または 3 1 4 1", id: "memory-answer", style: "display:none;" %>
+        </div>
+        <%= f.submit "回答する", id: "memory-submit", class: "btn btn-primary", style: "display:none;" %>
+      </div>
+
+    <% elsif genre == "word_puzzle" %>
+      <div class="question-box"><%= @quest.question_data["question"] %></div>
+      <ul class="choice-list">
+        <% @quest.question_data["choices"].each do |choice| %>
+          <li class="choice-item">
+            <label>
+              <%= f.radio_button :answer, choice %>
+              <%= choice %>
+            </label>
+          </li>
+        <% end %>
+      </ul>
+      <%= f.submit "回答する", class: "btn btn-primary" %>
+
+    <% else %>
+      <div class="question-box"><%= @quest.question_data["question"] %></div>
+      <div class="form-group">
+        <%= f.number_field :answer, placeholder: "数字を入力", style: "font-size:1.2rem; text-align:center;" %>
+      </div>
+      <%= f.submit "回答する", class: "btn btn-primary" %>
     <% end %>
-    <%= f.submit "回答する" %>
-
-  <% else %>
-    <%# calculation %>
-    <h2><%= @quest.question_data["question"] %></h2>
-    <%= f.number_field :answer, placeholder: "数字を入力" %>
-    <%= f.submit "回答する" %>
   <% end %>
-<% end %>
+</div>
 
-<%= link_to "依頼板に戻る", root_path %>
+<%= link_to "← 依頼板に戻る", root_path, class: "text-muted" %>
 
 <script>
   (function() {
@@ -76,8 +98,8 @@
           setTimeout(function() {
             display.style.display = 'none';
             document.getElementById('sequence-hidden').style.display = 'block';
-            document.getElementById('memory-answer').style.display = 'inline';
-            document.getElementById('memory-submit').style.display = 'inline';
+            document.getElementById('memory-answer').style.display = 'block';
+            document.getElementById('memory-submit').style.display = 'inline-block';
           }, 1000);
         }
       }, 1000);
