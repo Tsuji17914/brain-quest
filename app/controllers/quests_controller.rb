@@ -12,7 +12,7 @@ class QuestsController < ApplicationController
   end
 
   def reveal_hint
-    @quest = Quest.find(params[:quest_id])
+    @quest = Quest.find(params[:id])
     if current_user.use_item!("hint_book")
       flash[:hint] = @quest.question_data["hint"]
     end
