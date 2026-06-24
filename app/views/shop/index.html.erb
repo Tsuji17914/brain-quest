@@ -29,6 +29,50 @@
   </div>
 </div>
 
+<% if @inventory.any? %>
+  <div class="inventory-section">
+    <div class="inventory-title">🎒 所持品</div>
+    <div class="inventory-grid">
+      <% @inventory.each do |effect, info| %>
+        <% item = @items.find { |i| i.effect == effect } %>
+        <% next unless item %>
+        <div class="inventory-card">
+          <div class="inventory-item-name">
+            <% case effect
+               when "holy_water" then %>🌊 <%= item.name %>
+            <% when "sage_stone" then %>💎 <%= item.name %>
+            <% when "hint_book"  then %>📖 <%= item.name %>
+            <% end %>
+          </div>
+          <p class="inventory-count">所持 <%= info[:total] %>個 / 装備中 <%= info[:activated] %>個</p>
+          <p class="inventory-effect-desc">
+            <% case effect
+               when "sage_stone" then %>装備中は初回クリアのEXPが2倍
+            <% when "holy_water" then %>装備中はストリーク切れを1回防ぐ
+            <% when "hint_book"  then %>装備中はクエスト中にヒントを見られる
+            <% end %>
+          </p>
+          <div class="inventory-actions">
+            <% if info[:activated] > 0 %>
+              <span class="inventory-badge-active">装備中 ✓</span>
+              <%= form_with url: deactivate_user_item_path, method: :post do |f| %>
+                <%= f.hidden_field :effect, value: effect %>
+                <%= f.submit "外す", class: "paper-btn inventory-btn-off" %>
+              <% end %>
+            <% end %>
+            <% if info[:total] > info[:activated] %>
+              <%= form_with url: activate_user_item_path, method: :post do |f| %>
+                <%= f.hidden_field :effect, value: effect %>
+                <%= f.submit "装備する", class: "paper-btn inventory-btn-on" %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
 <div class="mt-3">
   <%= link_to "← 依頼板に戻る", root_path, class: "text-muted" %>
 </div>
