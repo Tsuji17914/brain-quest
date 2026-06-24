@@ -3,13 +3,15 @@ class AttemptsController < ApplicationController
   before_action :set_quest
 
   def create
-    first = current_user.attempts.where(quest: @quest, correct: true).none?
+    first   = current_user.attempts.where(quest: @quest, correct: true).none?
     correct = normalize_answer(params[:answer]) == normalize_answer(@quest.question_data["answer"])
 
-    base_exp    = correct && first ? Quest::EXP_REWARDS[@quest.difficulty.to_sym] : 0
+    reward_eligible = correct && first && !difficulty_rewarded_today?(@quest.difficulty)
+
+    base_exp    = reward_eligible ? Quest::EXP_REWARDS[@quest.difficulty.to_sym] : 0
     sage_active = base_exp > 0 && current_user.active_item?("sage_stone")
     earned_exp  = sage_active ? base_exp * 2 : base_exp
-    earned_gold = correct && first ? Quest::GOLD_REWARDS[@quest.difficulty.to_sym] : 0
+    earned_gold = reward_eligible ? Quest::GOLD_REWARDS[@quest.difficulty.to_sym] : 0
 
     @attempt = current_user.attempts.create!(
       quest: @quest,
@@ -41,10 +43,18 @@ class AttemptsController < ApplicationController
     @quest = Quest.find(params[:quest_id])
   end
 
+  def difficulty_rewarded_today?(difficulty)
+    today_quest_ids = DailyChallenge.where(date: Date.today)
+                                    .joins(:quests)
+                                    .where(quests: { difficulty: Quest.difficulties[difficulty] })
+                                    .pluck("quests.id")
+    current_user.attempts.where(quest_id: today_quest_ids, correct: true).where("earned_exp > 0").exists?
+  end
+
   def normalize_answer(value)
     value.to_s
-         .unicode_normalize(:nfkc)  # 全角→半角
-         .gsub(/[[:space:]]/, "")   # スペース除去
+         .unicode_normalize(:nfkc)
+         .gsub(/[[:space:]]/, "")
          .strip
   end
 end
