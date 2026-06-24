@@ -714,3 +714,30 @@ input[type="radio"] { width: auto; margin-right: 0.4rem; }
 }
 .genre-btn-icon { font-size: 1.6rem; }
 .genre-btn-label { font-size: 0.85rem; font-weight: 600; color: var(--gold); }
+
+/* ── Timer ── */
+.timer-wrap {
+  margin-bottom: 1rem;
+}
+.timer-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+.timer-bar-bg {
+  background: #2a2040;
+  border-radius: 6px;
+  height: 8px;
+  overflow: hidden;
+}
+.timer-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--exp-color);
+  border-radius: 6px;
+  transition: width 0.9s linear, background 0.3s;
+}
+.timer-bar-urgent {
+  background: var(--danger) !important;
+}

@@ -26,6 +26,15 @@
   </div>
 </div>
 
+<% if @quest.timed? %>
+  <div class="timer-wrap">
+    <div class="timer-label">⏱ 残り <span id="timer-seconds"><%= @quest.time_limit %></span> 秒</div>
+    <div class="timer-bar-bg">
+      <div class="timer-bar-fill" id="timer-bar"></div>
+    </div>
+  </div>
+<% end %>
+
 <% if flash[:hint].present? %>
   <div class="hint-box">💡 ヒント: <%= flash[:hint] %></div>
 <% elsif current_user.active_item?("hint_book") && @quest.question_data["hint"].present? %>
@@ -35,7 +44,7 @@
 <% end %>
 
 <div class="card" style="margin-top:0.75rem;">
-  <%= form_with url: quest_attempts_path(@quest), method: :post do |f| %>
+  <%= form_with url: quest_attempts_path(@quest), method: :post, html: { id: "quest-form" } do |f| %>
     <% genre = @quest.daily_challenge.genre %>
 
     <% if genre == "memory" %>
@@ -81,35 +90,59 @@
 
 <script>
   (function() {
+    // 記憶カウントダウン
     var startBtn = document.getElementById('start-btn');
-    if (!startBtn) return;
+    if (startBtn) {
+      startBtn.addEventListener('click', function() {
+        startBtn.style.display = 'none';
 
-    startBtn.addEventListener('click', function() {
-      startBtn.style.display = 'none';
+        var countdown = document.getElementById('countdown');
+        countdown.style.display = 'block';
+        var count = 3;
+        countdown.textContent = count;
 
-      var countdown = document.getElementById('countdown');
-      countdown.style.display = 'block';
-      var count = 3;
-      countdown.textContent = count;
+        var timer = setInterval(function() {
+          count -= 1;
+          if (count > 0) {
+            countdown.textContent = count;
+          } else {
+            clearInterval(timer);
+            countdown.style.display = 'none';
+            var display = document.getElementById('sequence-display');
+            display.style.display = 'block';
 
-      var timer = setInterval(function() {
-        count -= 1;
-        if (count > 0) {
-          countdown.textContent = count;
-        } else {
-          clearInterval(timer);
-          countdown.style.display = 'none';
-          var display = document.getElementById('sequence-display');
-          display.style.display = 'block';
+            setTimeout(function() {
+              display.style.display = 'none';
+              document.getElementById('sequence-hidden').style.display = 'block';
+              document.getElementById('memory-answer').style.display = 'block';
+              document.getElementById('memory-submit').style.display = 'inline-block';
+            }, 1000);
+          }
+        }, 1000);
+      });
+    }
 
-          setTimeout(function() {
-            display.style.display = 'none';
-            document.getElementById('sequence-hidden').style.display = 'block';
-            document.getElementById('memory-answer').style.display = 'block';
-            document.getElementById('memory-submit').style.display = 'inline-block';
-          }, 1000);
-        }
-      }, 1000);
-    });
+    // 制限時間タイマー（計算・言葉パズル）
+    var timerSeconds = document.getElementById('timer-seconds');
+    var timerBar     = document.getElementById('timer-bar');
+    if (!timerSeconds) return;
+
+    var total    = parseInt(timerSeconds.textContent, 10);
+    var remaining = total;
+
+    var countdown = setInterval(function() {
+      remaining -= 1;
+      timerSeconds.textContent = remaining;
+      timerBar.style.width = (remaining / total * 100) + '%';
+
+      if (remaining <= 10) {
+        timerBar.classList.add('timer-bar-urgent');
+      }
+
+      if (remaining <= 0) {
+        clearInterval(countdown);
+        document.getElementById('quest-form').submit();
+      }
+    }, 1000);
   })();
 </script>
