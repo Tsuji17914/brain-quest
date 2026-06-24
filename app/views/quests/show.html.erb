@@ -16,6 +16,8 @@
   <div class="quest-rewards mt-1" style="font-size:0.9rem;">
     <% if @already_cleared %>
       <span class="text-muted">✓ クリア済み（報酬受取済み）</span>
+    <% elsif @difficulty_rewarded_today %>
+      <span class="text-muted">本日この難易度の報酬は受取済み</span>
     <% else %>
       <span class="exp-val">EXP +<%= @quest.exp_reward %></span>
       <span class="gold-val">💰 +<%= @quest.gold_reward %>G</span>

@@ -1,22 +1,24 @@
 <div class="guild-sign">冒険者ギルド 依頼板</div>
 
-<div class="guild-board">
-  <% if @daily_challenge.nil? %>
+<div class="genre-picker">
+  <% [["calculation", "🧮", "計算"], ["memory", "🧠", "記憶"], ["word_puzzle", "📝", "言葉パズル"]].each do |genre, icon, label| %>
+    <%= link_to root_path(genre: genre),
+          class: "genre-btn #{'genre-btn-active' if @selected_genre == genre}" do %>
+      <span class="genre-btn-icon"><%= icon %></span>
+      <span class="genre-btn-label"><%= label %></span>
+    <% end %>
+  <% end %>
+</div>
+
+<% if @selected_genre.nil? %>
+  <div class="guild-board">
     <div class="board-empty">
       <p style="font-size:2rem; margin-bottom:0.5rem;">📜</p>
-      <p>本日の依頼はまだ届いておりません</p>
+      <p>ジャンルを選んで依頼を受けよう</p>
     </div>
-  <% else %>
-    <div style="text-align:center; margin-bottom:1.5rem;">
-      <span class="genre-seal">
-        <% case @daily_challenge.genre
-           when "calculation" then %>🧮 本日のジャンル：計算
-        <% when "memory"      then %>🧠 本日のジャンル：記憶
-        <% when "word_puzzle" then %>📝 本日のジャンル：言葉パズル
-        <% end %>
-      </span>
-    </div>
-
+  </div>
+<% else %>
+  <div class="guild-board">
     <% cleared_ids = current_user.attempts.where(correct: true).pluck(:quest_id).to_set %>
     <% groups = @quests.group_by(&:difficulty) %>
     <% interleaved = (0...2).flat_map { |i| %w[easy normal hard].map { |d| groups[d]&.[](i) }.compact } %>
@@ -24,6 +26,7 @@
     <div class="quest-papers">
       <% interleaved.each do |quest| %>
         <% cleared = cleared_ids.include?(quest.id) %>
+        <% rewarded = @rewarded_difficulties.include?(quest.difficulty) %>
         <div class="quest-paper <%= 'paper-cleared' if cleared %>">
           <p class="paper-heading <%= quest.difficulty %>-h">
             <% case quest.difficulty
@@ -48,7 +51,9 @@
             <% end %>
           </p>
           <div class="paper-rewards">
-            <% if cleared %>
+            <% if rewarded %>
+              <span style="color:#888; font-size:0.78rem;">本日の報酬済み</span>
+            <% elsif cleared %>
               <span style="color:#888; font-size:0.78rem;">報酬受取済み</span>
             <% else %>
               <span class="p-exp">EXP +<%= quest.exp_reward %></span>
@@ -59,5 +64,5 @@
         </div>
       <% end %>
     </div>
-  <% end %>
-</div>
+  </div>
+<% end %>
