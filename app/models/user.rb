@@ -55,14 +55,30 @@ class User < ApplicationRecord
   end
 
   def active_item?(effect)
-    user_items.unused.joins(:item).exists?(items: { effect: effect })
+    user_items.unused.activated.joins(:item).exists?(items: { effect: effect })
   end
 
   def use_item!(effect)
-    user_item = user_items.unused.joins(:item).find_by(items: { effect: effect })
+    user_item = user_items.unused.activated.joins(:item).find_by(items: { effect: effect })
     return false unless user_item
 
     user_item.use!
+    true
+  end
+
+  def activate_item!(effect)
+    user_item = user_items.unused.where(activated: false).joins(:item).find_by(items: { effect: effect })
+    return false unless user_item
+
+    user_item.update!(activated: true)
+    true
+  end
+
+  def deactivate_item!(effect)
+    user_item = user_items.unused.activated.joins(:item).find_by(items: { effect: effect })
+    return false unless user_item
+
+    user_item.update!(activated: false)
     true
   end
 
