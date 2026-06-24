@@ -1,20 +1,21 @@
 class DailyChallengeGenerator
-  def self.call(date = Date.today)
-    new(date).generate
+  def self.call(genre, date = Date.today)
+    new(genre, date).generate
   end
 
-  def initialize(date)
-    @date = date
+  def initialize(genre, date)
+    @genre = genre
+    @date  = date
   end
 
   def generate
-    return if DailyChallenge.exists?(date: @date)
+    daily = DailyChallenge.find_or_initialize_by(date: @date, genre: @genre)
+    return daily unless daily.new_record?
 
-    genre = pick_genre
-    daily = DailyChallenge.create!(date: @date, genre: genre)
+    daily.save!
 
     Quest.difficulties.each_key do |difficulty|
-      Question.for_genre_and_difficulty(genre, difficulty).order("RANDOM()").limit(2).each do |question|
+      Question.for_genre_and_difficulty(@genre, difficulty).order("RANDOM()").limit(2).each do |question|
         daily.quests.create!(
           question_data: question.question_data,
           difficulty: difficulty,
@@ -25,11 +26,5 @@ class DailyChallengeGenerator
     end
 
     daily
-  end
-
-  private
-
-  def pick_genre
-    DailyChallenge::GENRES[@date.jd % DailyChallenge::GENRES.size]
   end
 end
