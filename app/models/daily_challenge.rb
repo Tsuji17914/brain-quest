@@ -3,6 +3,6 @@ class DailyChallenge < ApplicationRecord
 
   GENRES = %w[memory calculation word_puzzle].freeze
 
-  validates :date, presence: true, uniqueness: true
+  validates :date, presence: true, uniqueness: { scope: :genre }
   validates :genre, presence: true, inclusion: { in: GENRES }
 end

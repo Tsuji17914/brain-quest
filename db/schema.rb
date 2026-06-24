@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_24_000012) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_24_015859) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -33,6 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_24_000012) do
     t.date "date", null: false
     t.string "genre", null: false
     t.datetime "updated_at", null: false
+    t.index ["date", "genre"], name: "index_daily_challenges_on_date_and_genre", unique: true
   end
 
   create_table "items", force: :cascade do |t|
