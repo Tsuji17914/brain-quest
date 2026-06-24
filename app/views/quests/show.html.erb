@@ -27,7 +27,7 @@
 </div>
 
 <% if @quest.timed? %>
-  <div class="timer-wrap">
+  <div class="timer-wrap" id="timer-wrap" style="display:none;">
     <div class="timer-label">⏱ 残り <span id="timer-seconds"><%= @quest.time_limit %></span> 秒</div>
     <div class="timer-bar-bg">
       <div class="timer-bar-fill" id="timer-bar"></div>
@@ -63,25 +63,35 @@
       </div>
 
     <% elsif genre == "word_puzzle" %>
-      <div class="question-box"><%= @quest.question_data["question"] %></div>
-      <ul class="choice-list">
-        <% @quest.question_data["choices"].each do |choice| %>
-          <li class="choice-item">
-            <label>
-              <%= f.radio_button :answer, choice %>
-              <%= choice %>
-            </label>
-          </li>
-        <% end %>
-      </ul>
-      <%= f.submit "回答する", class: "btn btn-primary" %>
+      <div id="timed-ready" style="text-align:center; padding:0.5rem 0;">
+        <button type="button" id="timed-start-btn" class="btn btn-gold">準備できたら押してください</button>
+      </div>
+      <div id="timed-content" style="display:none;">
+        <div class="question-box"><%= @quest.question_data["question"] %></div>
+        <ul class="choice-list">
+          <% @quest.question_data["choices"].each do |choice| %>
+            <li class="choice-item">
+              <label>
+                <%= f.radio_button :answer, choice %>
+                <%= choice %>
+              </label>
+            </li>
+          <% end %>
+        </ul>
+        <%= f.submit "回答する", class: "btn btn-primary" %>
+      </div>
 
     <% else %>
-      <div class="question-box"><%= @quest.question_data["question"] %></div>
-      <div class="form-group">
-        <%= f.number_field :answer, placeholder: "数字を入力", style: "font-size:1.2rem; text-align:center;" %>
+      <div id="timed-ready" style="text-align:center; padding:0.5rem 0;">
+        <button type="button" id="timed-start-btn" class="btn btn-gold">準備できたら押してください</button>
       </div>
-      <%= f.submit "回答する", class: "btn btn-primary" %>
+      <div id="timed-content" style="display:none;">
+        <div class="question-box"><%= @quest.question_data["question"] %></div>
+        <div class="form-group">
+          <%= f.number_field :answer, placeholder: "数字を入力", style: "font-size:1.2rem; text-align:center;" %>
+        </div>
+        <%= f.submit "回答する", class: "btn btn-primary" %>
+      </div>
     <% end %>
   <% end %>
 </div>
@@ -122,27 +132,35 @@
       });
     }
 
-    // 制限時間タイマー（計算・言葉パズル）
-    var timerSeconds = document.getElementById('timer-seconds');
-    var timerBar     = document.getElementById('timer-bar');
-    if (!timerSeconds) return;
+    // 計算・言葉パズル：準備ボタン → タイマー開始
+    var timedStartBtn = document.getElementById('timed-start-btn');
+    var timerWrap     = document.getElementById('timer-wrap');
+    var timerSeconds  = document.getElementById('timer-seconds');
+    var timerBar      = document.getElementById('timer-bar');
+    if (!timedStartBtn) return;
 
-    var total    = parseInt(timerSeconds.textContent, 10);
-    var remaining = total;
+    timedStartBtn.addEventListener('click', function() {
+      document.getElementById('timed-ready').style.display   = 'none';
+      document.getElementById('timed-content').style.display = 'block';
+      timerWrap.style.display = 'block';
 
-    var countdown = setInterval(function() {
-      remaining -= 1;
-      timerSeconds.textContent = remaining;
-      timerBar.style.width = (remaining / total * 100) + '%';
+      var total     = parseInt(timerSeconds.textContent, 10);
+      var remaining = total;
 
-      if (remaining <= 10) {
-        timerBar.classList.add('timer-bar-urgent');
-      }
+      var countdown = setInterval(function() {
+        remaining -= 1;
+        timerSeconds.textContent = remaining;
+        timerBar.style.width = (remaining / total * 100) + '%';
 
-      if (remaining <= 0) {
-        clearInterval(countdown);
-        document.getElementById('quest-form').submit();
-      }
-    }, 1000);
+        if (remaining <= 5) {
+          timerBar.classList.add('timer-bar-urgent');
+        }
+
+        if (remaining <= 0) {
+          clearInterval(countdown);
+          document.getElementById('quest-form').submit();
+        }
+      }, 1000);
+    });
   })();
 </script>
