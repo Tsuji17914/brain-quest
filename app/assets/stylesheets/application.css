@@ -685,6 +685,7 @@ input[type="radio"] { width: auto; margin-right: 0.4rem; }
   display: flex;
   gap: 1rem;
   justify-content: center;
+  margin-top: 1.25rem;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
 }
