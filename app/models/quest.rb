@@ -6,7 +6,7 @@ class Quest < ApplicationRecord
 
   EXP_REWARDS  = { easy: 50, normal: 90, hard: 150 }.freeze
   GOLD_REWARDS = { easy: 10, normal: 20, hard: 35 }.freeze
-  TIME_LIMITS  = { easy: 30, normal: 45, hard: 60 }.freeze
+  TIME_LIMITS  = { easy: 10, normal: 15, hard: 20 }.freeze
 
   TIMED_GENRES = %w[calculation word_puzzle].freeze
 
